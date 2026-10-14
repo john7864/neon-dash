@@ -155,6 +155,9 @@ var audio = {
 
   schedule: function () {
     if (!this.ctx || this.ctx.state !== 'running') return;
+    // Onglet en arrière-plan : le minuteur est ralenti (~1 s) et nextTime prend du retard.
+    // On saute les pas manqués au lieu de les jouer tous d'un coup au retour.
+    if (this.nextTime < this.ctx.currentTime) this.nextTime = this.ctx.currentTime + 0.02;
     var ahead = this.ctx.currentTime + 0.15;
     while (this.nextTime < ahead) {
       this.playStep(this.step, this.nextTime);
