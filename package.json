@@ -1,0 +1,8 @@
+{
+  "name": "neon-dash",
+  "version": "1.3.1",
+  "description": "Runner rythmé à un bouton, type Geometry Dash — multijoueur temps réel (fantômes + classement mondial), 100% canvas/WebAudio, zéro dépendance.",
+  "scripts": {
+    "dev": "node server.js"
+  }
+}

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>NEON DASH</title>
+<!-- Application web : iOS -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NEON DASH">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<!-- Application web : Android / Chrome -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#3834FF">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<link rel="stylesheet" href="style.css?v=DEV">
+</head>
+<body>
+
+<div id="stage">
+  <canvas id="game" width="960" height="540"></canvas>
+</div>
+
+<button id="btnPause" class="hidden" aria-label="Pause">❚❚</button>
+<button id="btnEdit" class="hidden">← ÉDITEUR</button>
+<button id="btnFull" aria-label="Plein écran" title="Plein écran">
+  <svg class="ic-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M4 9 V4 h5 M20 9 V4 h-5 M4 15 v5 h5 M20 15 v5 h-5"/></svg>
+  <svg class="ic-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M9 4 v5 H4 M15 4 v5 h5 M9 20 v-5 H4 M15 20 v-5 h5"/></svg>
+</button>
+<div id="flash" class="hidden">TENTATIVE 1</div>
+
+<!-- ÉCRAN TITRE -->
+<div id="menu" class="overlay">
+  <div class="zz zz-top"></div>
+  <div class="panel">
+    <h1 class="title"><span style="animation-delay:0s">N</span><span style="animation-delay:.12s">E</span><span style="animation-delay:.24s">O</span><span style="animation-delay:.36s">N</span><span style="animation-delay:.48s">&nbsp;</span><span style="animation-delay:.60s">D</span><span style="animation-delay:.72s">A</span><span style="animation-delay:.84s">S</span><span style="animation-delay:.96s">H</span></h1>
+
+    <svg class="div" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,11 16,3 32,11 48,3 64,11 80,3 96,11 112,3 128,11 144,3 160,11 176,3 192,11 208,3 224,11 240,3 256,11 272,3 288,11 304,3 320,11" fill="none" stroke="#C6D32D" stroke-width="2"/>
+      <polyline points="8,13 24,5 40,13 56,5 72,13 88,5 104,13 120,5 136,13 152,5 168,13 184,5 200,13 216,5 232,13 248,5 264,13 280,5 296,13 312,5" fill="none" stroke="#FF624D" stroke-width="2" opacity="0.55"/>
+    </svg>
+
+    <div class="cards" id="cards"></div>
+    <label class="lc-practice"><input type="checkbox" id="practice"> MODE ENTRAÎNEMENT</label>
+    <div class="lc-total">TENTATIVES TOTALES : <b id="stAtt">0</b></div>
+
+    <div class="mp-row">
+      <label class="mp-name-l">PSEUDO
+        <input id="mpName" type="text" maxlength="14" spellcheck="false" autocomplete="off" autocapitalize="characters">
+      </label>
+      <div id="mpStatus" class="mp-status off"><span class="dot"></span><span id="mpStatusTxt">HORS LIGNE</span></div>
+    </div>
+
+    <div class="cta-row">
+      <button id="btnPlay" class="cta">JOUER</button>
+      <button id="btnEditor" class="cta2">ÉDITEUR</button>
+      <button id="btnPublic" class="cta2">🌐 NIVEAUX PUBLICS</button>
+      <button id="btnTrophies" class="cta2">TROPHÉES</button>
+      <button id="btnBoard" class="cta2">CLASSEMENT</button>
+    </div>
+
+    <svg class="div" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,11 16,3 32,11 48,3 64,11 80,3 96,11 112,3 128,11 144,3 160,11 176,3 192,11 208,3 224,11 240,3 256,11 272,3 288,11 304,3 320,11" fill="none" stroke="#3834FF" stroke-width="2"/>
+      <polyline points="8,13 24,5 40,13 56,5 72,13 88,5 104,13 120,5 136,13 152,5 168,13 184,5 200,13 216,5 232,13 248,5 264,13 280,5 296,13 312,5" fill="none" stroke="#C6D32D" stroke-width="2" opacity="0.55"/>
+    </svg>
+
+    <footer>ESPACE / CLIC / TACTILE — SAUTER &nbsp;·&nbsp; ÉCHAP — PAUSE &nbsp;·&nbsp; M — SON &nbsp;·&nbsp; Z/X — CHECKPOINTS EN ENTRAÎNEMENT &nbsp;·&nbsp; ‹ › — CHOIX DU NIVEAU</footer>
+  </div>
+  <div class="v-badge">v1.2</div>
+  <div class="zz zz-bot"></div>
+</div>
+
+<!-- PAUSE -->
+<div id="pause" class="overlay hidden">
+  <div class="zz zz-top"></div>
+  <div class="panel">
+    <h2>PAUSE</h2>
+    <div class="lvl-name" id="pLevel">NIVEAU 1 — LIGNE DE BASSE</div>
+    <svg class="div" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,11 16,3 32,11 48,3 64,11 80,3 96,11 112,3 128,11 144,3 160,11 176,3 192,11 208,3 224,11 240,3 256,11 272,3 288,11 304,3 320,11" fill="none" stroke="#C6D32D" stroke-width="2"/>
+    </svg>
+    <div class="btns">
+      <button id="btnResume" class="btn">REPRENDRE</button>
+      <button id="btnRestart" class="btn">RECOMMENCER</button>
+      <button id="btnMenu" class="btn">MENU</button>
+      <button id="btnSound" class="btn">SON : OUI</button>
+    </div>
+  </div>
+  <div class="zz zz-bot"></div>
+</div>
+
+<!-- VICTOIRE -->
+<div id="win" class="overlay hidden">
+  <div class="zz zz-top"></div>
+  <div class="panel">
+    <h2 class="win-title">NIVEAU TERMINÉ !</h2>
+    <div class="lvl-name" id="wLevel">NIVEAU 1 — LIGNE DE BASSE</div>
+    <div class="lvl-special" id="wSpecial"></div>
+    <svg class="div" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,11 16,3 32,11 48,3 64,11 80,3 96,11 112,3 128,11 144,3 160,11 176,3 192,11 208,3 224,11 240,3 256,11 272,3 288,11 304,3 320,11" fill="none" stroke="#C6D32D" stroke-width="2"/>
+      <polyline points="8,13 24,5 40,13 56,5 72,13 88,5 104,13 120,5 136,13 152,5 168,13 184,5 200,13 216,5 232,13 248,5 264,13 280,5 296,13 312,5" fill="none" stroke="#3834FF" stroke-width="2" opacity="0.55"/>
+    </svg>
+    <div class="stats">
+      <div><span>TENTATIVES</span><b id="wAtt">1</b></div>
+      <div><span>SAUTS</span><b id="wJump">0</b></div>
+      <div><span>PIÈCES</span><b id="wCoins">0/3</b></div>
+      <div><span>TEMPS</span><b id="wTime">0.0 s</b></div>
+    </div>
+    <div class="lvl-special" id="wRank"></div>
+    <div class="btns row">
+      <button id="btnAgain" class="btn">REJOUER</button>
+      <button id="btnMenu2" class="btn">MENU</button>
+    </div>
+  </div>
+  <div class="zz zz-bot"></div>
+</div>
+
+<!-- ÉDITEUR -->
+<div id="editor" class="hidden">
+  <div class="ed-top">
+    <button id="edMenu" class="btn sm">← MENU</button>
+    <input id="edName" type="text" maxlength="24" value="MON NIVEAU" spellcheck="false">
+    <label class="ed-speed" title="Vitesse de défilement du niveau">
+      <input id="edSpeed" type="range" min="360" max="820" step="20" value="540">
+      <span id="edSpeedVal">540 px/s</span>
+    </label>
+    <select id="edBpm">
+      <option value="140">♪ 140 BPM</option>
+      <option value="160">♪ 160 BPM</option>
+    </select>
+    <button id="edTest" class="btn sm go">▶ TESTER</button>
+    <button id="edSave" class="btn sm">💾 ENREGISTRER</button>
+    <button id="edMine" class="btn sm">MES NIVEAUX</button>
+    <button id="edUndo" class="btn sm" title="Annuler (Ctrl+Z)">↺</button>
+    <button id="edRedo" class="btn sm" title="Rétablir (Ctrl+Y)">↻</button>
+  </div>
+  <div class="ed-tools" id="edTools"></div>
+  <div class="ed-bottom">
+    <span id="edPos">x = 0 px (~0 s)</span>
+    <input id="edScroll" type="range" min="0" max="10000" value="0">
+    <span class="ed-hint">MOLETTE / SHIFT+GLISSER / ← → — DÉFILER · CLIC GAUCHE — POSER · CLIC DROIT — GOMMER · CTRL+Z/Y</span>
+  </div>
+  <div id="edMsg" class="hidden"></div>
+</div>
+
+<!-- MES NIVEAUX -->
+<div id="myLevels" class="overlay hidden">
+  <div class="zz zz-top"></div>
+  <div class="panel wide">
+    <h2>MES NIVEAUX</h2>
+    <svg class="div" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,11 16,3 32,11 48,3 64,11 80,3 96,11 112,3 128,11 144,3 160,11 176,3 192,11 208,3 224,11 240,3 256,11 272,3 288,11 304,3 320,11" fill="none" stroke="#C6D32D" stroke-width="2"/>
+    </svg>
+    <div id="mlList" class="ml-list"></div>
+    <div id="mlMsg" class="panel-msg"></div>
+    <div class="btns row">
+      <button id="mlResetDemo" class="btn hidden">RÉINITIALISER LA DÉMO</button>
+      <button id="mlPublic" class="btn">NIVEAUX PUBLICS</button>
+      <button id="mlImport" class="btn">IMPORTER</button>
+      <button id="mlClose" class="btn">FERMER</button>
+    </div>
+  </div>
+  <div class="zz zz-bot"></div>
+</div>
+
+<!-- NIVEAUX PUBLICS -->
+<div id="publicLevels" class="overlay hidden">
+  <div class="zz zz-top"></div>
+  <div class="panel wide">
+    <h2>NIVEAUX PUBLICS</h2>
+    <svg class="div" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,11 16,3 32,11 48,3 64,11 80,3 96,11 112,3 128,11 144,3 160,11 176,3 192,11 208,3 224,11 240,3 256,11 272,3 288,11 304,3 320,11" fill="none" stroke="#C6D32D" stroke-width="2"/>
+    </svg>
+    <div id="plList" class="ml-list"></div>
+    <div id="plMsg" class="panel-msg"></div>
+    <div class="btns row">
+      <button id="plRefresh" class="btn">ACTUALISER</button>
+      <button id="plClose" class="btn">FERMER</button>
+    </div>
+  </div>
+  <div class="zz zz-bot"></div>
+</div>
+
+<!-- EXPORT -->
+<div id="exportModal" class="overlay hidden">
+  <div class="zz zz-top"></div>
+  <div class="panel wide">
+    <h2>EXPORTER</h2>
+    <p class="modal-sub">JSON copié dans le presse-papiers — tu peux aussi le sélectionner ici :</p>
+    <textarea id="exportText" readonly spellcheck="false"></textarea>
+    <div class="btns row">
+      <button id="exportCopy" class="btn">COPIER</button>
+      <button id="exportClose" class="btn">FERMER</button>
+    </div>
+  </div>
+  <div class="zz zz-bot"></div>
+</div>
+
+<!-- IMPORT -->
+<div id="importModal" class="overlay hidden">
+  <div class="zz zz-top"></div>
+  <div class="panel wide">
+    <h2>IMPORTER</h2>
+    <p class="modal-sub">Colle le JSON d'un niveau NEON DASH :</p>
+    <textarea id="importText" placeholder='{"v":1,"name":"MON NIVEAU","speed":540,"bpm":140,"objects":[...]}' spellcheck="false"></textarea>
+    <div id="importErr" class="import-err"></div>
+    <div class="btns row">
+      <button id="importOk" class="btn">IMPORTER</button>
+      <button id="importCancel" class="btn">ANNULER</button>
+    </div>
+  </div>
+  <div class="zz zz-bot"></div>
+</div>
+
+<!-- TROPHÉES -->
+<div id="trophies" class="overlay hidden">
+  <div class="zz zz-top"></div>
+  <div class="panel wide">
+    <h2>TROPHÉES</h2>
+    <div class="troph-head"><b id="trophCount">0/10</b><span id="trophStats"></span></div>
+    <svg class="div" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,11 16,3 32,11 48,3 64,11 80,3 96,11 112,3 128,11 144,3 160,11 176,3 192,11 208,3 224,11 240,3 256,11 272,3 288,11 304,3 320,11" fill="none" stroke="#C6D32D" stroke-width="2"/>
+    </svg>
+    <div id="trophList" class="troph-grid"></div>
+    <div class="btns row">
+      <button id="trophClose" class="btn">FERMER</button>
+    </div>
+  </div>
+  <div class="zz zz-bot"></div>
+</div>
+
+<!-- CLASSEMENT (scores mondiaux + joueurs en ligne) -->
+<div id="board" class="overlay hidden">
+  <div class="zz zz-top"></div>
+  <div class="panel wide">
+    <h2>CLASSEMENT</h2>
+    <div class="bd-lvl-row">
+      <button id="bdPrev" class="btn sm" aria-label="Niveau précédent">‹</button>
+      <div class="lvl-name" id="bdLevel">NIVEAU 1 — LIGNE DE BASSE</div>
+      <button id="bdNext" class="btn sm" aria-label="Niveau suivant">›</button>
+    </div>
+    <svg class="div" viewBox="0 0 320 14" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points="0,11 16,3 32,11 48,3 64,11 80,3 96,11 112,3 128,11 144,3 160,11 176,3 192,11 208,3 224,11 240,3 256,11 272,3 288,11 304,3 320,11" fill="none" stroke="#C6D32D" stroke-width="2"/>
+    </svg>
+    <div id="bdList" class="bd-list"></div>
+    <div class="bd-online-t">JOUEURS EN LIGNE — <b id="bdCount">0</b></div>
+    <div id="bdOnline" class="bd-online"></div>
+    <div class="btns row">
+      <button id="bdClose" class="btn">FERMER</button>
+    </div>
+  </div>
+  <div class="zz zz-bot"></div>
+</div>
+
+<!-- ROTATION (portrait sur tactile) -->
+<div id="rotate">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square">
+    <rect x="7" y="2.5" width="10" height="19" rx="2"/>
+    <line x1="10.5" y1="19" x2="13.5" y2="19"/>
+    <path d="M20.5 8.5 a4.5 4.5 0 0 1 -1.5 5.5" stroke="#FF624D"/>
+    <polyline points="19.5,15.5 19,13.2 21.2,13.6" stroke="#FF624D"/>
+  </svg>
+  <div class="rot-t">TOURNEZ VOTRE APPAREIL</div>
+  <div class="rot-s">NEON DASH se joue en mode paysage</div>
+</div>
+
+<script src="game.js?v=DEV"></script>
+</body>
+</html>

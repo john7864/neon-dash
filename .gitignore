@@ -1,0 +1,4 @@
+scores.json
+node_modules/
+.claude/
+*.log
